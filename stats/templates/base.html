@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}ArchiveTeam Global Leaderboard{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html, body {
+            font-family: sans-serif;
+        }
+
+        .numeric {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <a href="./">ArchiveTeam Global Leaderboard</a>
+    <div role="main">
+        {% block main %}Main not defined.{% endblock %}
+    </div>
+    <hr>
+    Generated {{ generation_date }}.
+</body>
+</html>

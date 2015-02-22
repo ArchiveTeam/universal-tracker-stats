@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% import 'nickname_totals.html' as nick_totals %}
+
+{% block main %}
+<h1>Summary</h1>
+
+<table>
+    <tr>
+        <th>Total Bytes</th>
+        <td>{{ format_size(total_bytes) }}</td>
+    </tr>
+    <tr>
+        <th>Total Items</th>
+        <td>{{ format_num(total_items) }}</td>
+    </tr>
+</table>
+
+<h2><a href="nickname.html">By Nickname</a></h2>
+
+{{ nick_totals.nickname_leaderboard_table(nickname_infos, count=10) }}
+
+{% endblock %}

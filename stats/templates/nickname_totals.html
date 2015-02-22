@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %} Nickname Leaderboard {% endblock %}
+
+{% macro nickname_leaderboard_table(nickname_infos, count=10000) -%}
+<table>
+    <tr>
+        <th>Rank</th>
+        <th>Nickname</th>
+        <th>Total Bytes</th>
+        <th>Total Items</th>
+    </tr>
+    {% for index, nickname_info in tuple(enumerate(nickname_infos))[:count] %}
+    <tr>
+        <td class="numeric">{{ index + 1 }}</td>
+        <td>{{ nickname_info['nickname'] }}</td>
+        <td class="numeric">{{ format_size(nickname_info['size']) }}</td>
+        <td class="numeric">{{ format_num(nickname_info['item_count']) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{%- endmacro %}
+
+{% block main %}
+
+<h1>Nickname Leaderboard</h1>
+
+{{ nickname_leaderboard_table(nickname_infos) }}
+
+{% endblock %}
+
+
