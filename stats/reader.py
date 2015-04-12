@@ -1,3 +1,4 @@
+import json
 import gzip
 import lzma
 import os
@@ -6,9 +7,9 @@ import re
 import arrow
 
 try:
-    import ujson as json
+    import ujson as fast_json
 except ImportError:
-    import json
+    fast_json = None
 
 
 def decompress_open(path):
@@ -29,9 +30,24 @@ def read(path):
 
     project = match.group(1)
 
+    if fast_json:
+        fast_loads = fast_json.loads
+    else:
+        fast_loads = None
+
+    norm_loads = json.loads
+
     with decompress_open(path)(path, mode='rt') as file:
+
         for line in file:
-            doc = json.loads(line)
+            if fast_loads:
+                try:
+                    doc = fast_loads(line)
+                except ValueError:
+                    # May be an overflow
+                    doc = norm_loads(line)
+            else:
+                doc = norm_loads(line)
 
             item = doc['item']
             nickname = doc['by']
