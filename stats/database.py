@@ -2,7 +2,7 @@ import contextlib
 import hashlib
 import collections
 from sqlalchemy import Column, Integer, String, DateTime, create_engine, insert, \
-    Binary, Date, delete, select, func
+    Binary, Date, delete, select, func, update, and_
 import sqlalchemy.ext.declarative
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import SingletonThreadPool
@@ -16,7 +16,7 @@ class LogRecord(DBBase):
     id = Column(Binary, primary_key=True)
     project = Column(String, nullable=False)
     nickname = Column(String, nullable=False)
-    date = Column(DateTime, nullable=False)
+    when = Column(DateTime, nullable=False)
     size = Column(Integer, nullable=False)
 
 
@@ -66,7 +66,7 @@ class Database(object):
     def insert_session(self):
         items = []
 
-        def add_record(project, item, nickname, date, size):
+        def add_record(project, item, nickname, when, size):
             hasher = hashlib.sha1()
             hasher.update(project.encode('utf8'))
             hasher.update(b'\t')
@@ -74,7 +74,7 @@ class Database(object):
             hasher.update(b'\t')
             hasher.update(nickname.encode('utf8'))
             hasher.update(b'\t')
-            hasher.update(date.isoformat().encode('utf8'))
+            hasher.update(when.isoformat().encode('utf8'))
 
             record_id = hasher.digest()
 
@@ -82,7 +82,7 @@ class Database(object):
                 'id': record_id,
                 'project': project,
                 'nickname': nickname,
-                'date': date,
+                'when': when,
                 'size': size
             })
 
@@ -99,10 +99,9 @@ class Database(object):
         nickname_items_counter = collections.Counter()
 
         with self._session() as session:
-
             query = select([
                 LogRecord.project, LogRecord.nickname,
-                LogRecord.date, LogRecord.size])
+                LogRecord.when, LogRecord.size])
 
             for counter, row in enumerate(session.execute(query)):
                 nickname_size_counter[row.nickname] += row.size
@@ -127,8 +126,8 @@ class Database(object):
         with self._session() as session:
             query = select([
                 func.sum(NicknameTotal.size),
-                func.sum(NicknameTotal.item_count)]
-            )
+                func.sum(NicknameTotal.item_count)
+            ])
             return session.execute(query).first()
 
     def get_nickname_totals(self):
