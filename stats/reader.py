@@ -1,9 +1,14 @@
-import json
+import gzip
 import lzma
 import os
 import re
 
 import arrow
+
+try:
+    import ujson as json
+except ImportError:
+    import json
 
 
 def decompress_open(path):
@@ -13,6 +18,8 @@ def decompress_open(path):
         return open
     elif extension == '.xz':
         return lzma.open
+    elif extension == '.gz':
+        return gzip.open
 
 
 def read(path):
